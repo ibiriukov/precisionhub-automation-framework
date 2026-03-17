@@ -23,7 +23,7 @@ jobs:
       UI_USERNAME: ${{ secrets.UI_USERNAME }}
       UI_PASSWORD: ${{ secrets.UI_PASSWORD }}
       BASE_URL: ${{ secrets.DEV_BASE_URL }}
-      API_BASE_URL: ${{ secrets.DEV_BASE_URL }}
+      API_BASE_URL: ${{ secrets.API_BASE_URL }}
 
     steps:
       - name: Checkout repository
