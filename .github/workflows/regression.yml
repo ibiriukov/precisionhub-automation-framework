@@ -56,7 +56,7 @@ jobs:
         if: always()
         uses: dorny/test-reporter@v1
         with:
-          name: Regression Results
+          name: Regression Test Results
           path: reports/junit.xml
           reporter: java-junit
 
