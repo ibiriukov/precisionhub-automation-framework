@@ -42,7 +42,11 @@ jobs:
 
       - name: Run smoke tests
         run: |
-          pytest -m "smoke" --html=reports/report.html --self-contained-html --junitxml=reports/junit.xml
+          mkdir -p reports
+          pytest -m "smoke" \
+            --html=reports/report.html \
+            --self-contained-html \
+            --junitxml=reports/junit.xml
 
       - name: Upload test report
         if: always()
