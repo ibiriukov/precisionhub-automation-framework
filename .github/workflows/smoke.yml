@@ -18,9 +18,8 @@ jobs:
       TIMEOUT_MS: 10000
       UI_USERNAME: ${{ secrets.UI_USERNAME }}
       UI_PASSWORD: ${{ secrets.UI_PASSWORD }}
-      DEV_BASE_URL: ${{ secrets.DEV_BASE_URL }}
-      PROD_BASE_URL: ${{ secrets.PROD_BASE_URL }}
-      STAGE_BASE_URL: ${{ secrets.STAGE_BASE_URL }}
+      BASE_URL: ${{ secrets.DEV_BASE_URL }}
+      API_BASE_URL: ${{ secrets.DEV_BASE_URL }}
 
     steps:
       - name: Checkout repository
