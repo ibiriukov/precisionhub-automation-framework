@@ -7,6 +7,10 @@ on:
       - master
   pull_request:
 
+permissions:
+  contents: read
+  checks: write
+
 jobs:
   smoke:
     runs-on: ubuntu-latest
@@ -52,9 +56,9 @@ jobs:
         if: always()
         uses: dorny/test-reporter@v1
         with:
-            name: Pytest Results
-            path: reports/junit.xml
-            reporter: java-junit
+          name: Pytest Results
+          path: reports/junit.xml
+          reporter: java-junit
 
       - name: Upload test report
         if: always()
