@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   regression:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     env:
@@ -21,12 +22,14 @@ jobs:
       TIMEOUT_MS: 10000
       UI_USERNAME: ${{ secrets.UI_USERNAME }}
       UI_PASSWORD: ${{ secrets.UI_PASSWORD }}
-      BASE_URL: ${{ secrets.DEV_BASE_URL }}
+      BASE_URL: ${{ secrets.STAGING_BASE_URL }}
       API_BASE_URL: ${{ secrets.API_BASE_URL }}
 
     steps:
-      - name: Checkout repository
+      - name: Checkout deployed commit
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
 
       - name: Set up Python
         uses: actions/setup-python@v5

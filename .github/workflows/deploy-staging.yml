@@ -12,6 +12,8 @@ jobs:
   deploy-staging:
     runs-on: ubuntu-latest
     environment: staging
+    env:
+      STAGING_URL: ${{ secrets.STAGING_BASE_URL }}
 
     steps:
       - name: Checkout repository
@@ -19,5 +21,5 @@ jobs:
 
       - name: Simulate deploy to staging
         run: |
-          echo "Deploying build to staging..."
+          echo "Deploying build to staging at $STAGING_URL ..."
           echo "Deployment successful."
