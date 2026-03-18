@@ -2,10 +2,6 @@ name: UI Regression Tests
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
-      - master
 
 permissions:
   contents: read
@@ -56,7 +52,7 @@ jobs:
         if: always()
         uses: dorny/test-reporter@v1
         with:
-          name: Regression Test Results
+          name: Regression Results
           path: reports/junit.xml
           reporter: java-junit
 
