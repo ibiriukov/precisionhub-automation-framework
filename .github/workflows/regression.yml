@@ -15,9 +15,14 @@ jobs:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+
     env:
-      ENV: dev
-      BROWSER: chromium
+      ENV: staging
+      BROWSER: ${{ matrix.browser }}
       HEADLESS: true
       TIMEOUT_MS: 10000
       UI_USERNAME: ${{ secrets.UI_USERNAME }}
@@ -43,8 +48,8 @@ jobs:
 
       - name: Install Playwright browsers
         run: |
-          python -m playwright install chromium
-          python -m playwright install-deps chromium
+          python -m playwright install $BROWSER
+          python -m playwright install-deps $BROWSER
 
       - name: Run regression tests
         run: |
@@ -76,22 +81,22 @@ jobs:
           echo "- Job status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "### Generated outputs" >> $GITHUB_STEP_SUMMARY
-          echo "- HTML report artifact: \`regression-report\`" >> $GITHUB_STEP_SUMMARY
+          echo "- HTML report artifact: \`regression-report-${{ matrix.browser }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- JUnit file: \`reports/regression-junit.xml\`" >> $GITHUB_STEP_SUMMARY
           echo "- HTML file: \`reports/regression-report.html\`" >> $GITHUB_STEP_SUMMARY
-          echo "- Failure artifacts artifact: \`regression-playwright-artifacts\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Failure artifacts artifact: \`regression-playwright-artifacts-${{ matrix.browser }}\`" >> $GITHUB_STEP_SUMMARY
           echo "- Artifact folders: \`artifacts/screenshots\`, \`artifacts/traces\`, \`artifacts/videos\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: regression-report
+          name: regression-report-${{ matrix.browser }}
           path: reports/
 
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: regression-playwright-artifacts
+          name: regression-playwright-artifacts-${{ matrix.browser }}
           path: artifacts/
