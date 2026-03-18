@@ -46,17 +46,34 @@ jobs:
         run: |
           mkdir -p reports
           pytest -m "smoke" \
-            --html=reports/report.html \
+            --html=reports/smoke-report.html \
             --self-contained-html \
-            --junitxml=reports/junit.xml
+            --junitxml=reports/smoke-junit.xml
 
       - name: Publish Test Results
         if: always()
         uses: dorny/test-reporter@v1
         with:
           name: Smoke Results
-          path: reports/junit.xml
+          path: reports/smoke-junit.xml
           reporter: java-junit
+
+      - name: Add smoke summary
+        if: always()
+        run: |
+          echo "## Smoke Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Environment: DEV" >> $GITHUB_STEP_SUMMARY
+          echo "- Browser: $BROWSER" >> $GITHUB_STEP_SUMMARY
+          echo "- Base URL: $BASE_URL" >> $GITHUB_STEP_SUMMARY
+          echo "- Event: pull_request" >> $GITHUB_STEP_SUMMARY
+          echo "- Job status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Generated outputs" >> $GITHUB_STEP_SUMMARY
+          echo "- HTML report artifact: \`smoke-html-report\`" >> $GITHUB_STEP_SUMMARY
+          echo "- JUnit file: \`reports/smoke-junit.xml\`" >> $GITHUB_STEP_SUMMARY
+          echo "- HTML file: \`reports/smoke-report.html\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Failure artifacts artifact: \`smoke-playwright-artifacts\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload test report
         if: always()
