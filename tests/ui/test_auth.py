@@ -7,7 +7,7 @@ from src.pages.login_page import LoginPage
 @pytest.mark.ui
 @pytest.mark.smoke
 def test_login_success(dashboard_page):
-    assert dashboard_page.get_header() == "Dashboard"
+    assert dashboard_page.get_header() == "WrongTitle"
 
 @pytest.mark.ui
 @pytest.mark.regression
