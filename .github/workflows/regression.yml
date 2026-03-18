@@ -49,24 +49,44 @@ jobs:
       - name: Run regression tests
         run: |
           mkdir -p reports
+          mkdir -p artifacts
           pytest -m "regression" \
-            --html=reports/report.html \
+            --html=reports/regression-report.html \
             --self-contained-html \
-            --junitxml=reports/junit.xml
+            --junitxml=reports/regression-junit.xml
 
       - name: Publish Test Results
         if: always()
         uses: dorny/test-reporter@v1
         with:
           name: Regression Results
-          path: reports/junit.xml
+          path: reports/regression-junit.xml
           reporter: java-junit
+
+      - name: Add regression summary
+        if: always()
+        run: |
+          echo "## Regression Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Environment: STAGING" >> $GITHUB_STEP_SUMMARY
+          echo "- Browser: $BROWSER" >> $GITHUB_STEP_SUMMARY
+          echo "- Base URL: $BASE_URL" >> $GITHUB_STEP_SUMMARY
+          echo "- Triggered by workflow: ${{ github.event.workflow_run.name }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Deployed commit: ${{ github.event.workflow_run.head_sha }}" >> $GITHUB_STEP_SUMMARY
+          echo "- Job status: ${{ job.status }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Generated outputs" >> $GITHUB_STEP_SUMMARY
+          echo "- HTML report artifact: \`regression-report\`" >> $GITHUB_STEP_SUMMARY
+          echo "- JUnit file: \`reports/regression-junit.xml\`" >> $GITHUB_STEP_SUMMARY
+          echo "- HTML file: \`reports/regression-report.html\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Failure artifacts artifact: \`regression-playwright-artifacts\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Artifact folders: \`artifacts/screenshots\`, \`artifacts/traces\`, \`artifacts/videos\`" >> $GITHUB_STEP_SUMMARY
 
       - name: Upload test report
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: regression-html-report
+          name: regression-report
           path: reports/
 
       - name: Upload failure artifacts
