@@ -1,7 +1,10 @@
 name: UI Regression Tests
 
 on:
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["Deploy to Staging"]
+    types:
+      - completed
 
 permissions:
   contents: read
