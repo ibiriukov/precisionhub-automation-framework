@@ -50,7 +50,7 @@ def test_refresh_after_logout(dashboard_page):
    dashboard_page.click_user_menu_item("Logout")
    dashboard_page.page.reload()
    login_page = LoginPage(dashboard_page.page)
-   assert not login_page.is_loaded()
+   assert login_page.is_loaded()
 
 
 
