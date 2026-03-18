@@ -13,6 +13,9 @@ from src.pages.login_page import LoginPage
 from src.config.settings import UI_USERNAME, UI_PASSWORD, BROWSER, HEADLESS, TIMEOUT_MS
 
 ARTIFACTS_DIR = "artifacts"
+SCREENSHOTS_DIR = os.path.join(ARTIFACTS_DIR, "screenshots")
+TRACES_DIR = os.path.join(ARTIFACTS_DIR, "traces")
+VIDEOS_DIR = os.path.join(ARTIFACTS_DIR, "videos")
 
 
 @pytest.fixture(scope="session")
@@ -26,25 +29,33 @@ def browser():
 
 @pytest.fixture(scope="function")
 def page(browser, request):
-    context = browser.new_context()
+    _ensure_artifacts_dir()
+    context = browser.new_context(
+        record_video_dir=VIDEOS_DIR
+    )
     context.set_default_timeout(TIMEOUT_MS)
 
-    # Start tracing for every test; save only on failure
     context.tracing.start(screenshots=True, snapshots=True, sources=True)
 
     page = context.new_page()
     yield page
 
     failed = getattr(request.node, "failed", False)
+
     if failed:
-        _ensure_artifacts_dir()
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        trace_path = os.path.join(ARTIFACTS_DIR, f"{request.node.name}_{ts}_trace.zip")
+        trace_path = os.path.join(TRACES_DIR, f"{request.node.name}_{BROWSER}_{ts}_trace.zip")
         context.tracing.stop(path=trace_path)
     else:
         context.tracing.stop()
 
+    video = page.video
     context.close()
+
+    if video:
+        video_path = video.path()
+        if not failed and os.path.exists(video_path):
+            os.remove(video_path)
 
 
 @pytest.fixture(scope="function")
@@ -56,6 +67,9 @@ def dashboard_page(page):
 
 def _ensure_artifacts_dir():
     os.makedirs(ARTIFACTS_DIR, exist_ok=True)
+    os.makedirs(SCREENSHOTS_DIR, exist_ok=True)
+    os.makedirs(TRACES_DIR, exist_ok=True)
+    os.makedirs(VIDEOS_DIR, exist_ok=True)
 
 @pytest.fixture(autouse=True)
 def screenshot_on_failure(request, page):
@@ -63,7 +77,7 @@ def screenshot_on_failure(request, page):
     if getattr(request.node, "rep_call", None) and request.node.rep_call.failed:
         _ensure_artifacts_dir()
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-        path = os.path.join(ARTIFACTS_DIR, f"{request.node.name}_{ts}.png")
+        path = os.path.join(SCREENSHOTS_DIR, f"{request.node.name}_{BROWSER}_{ts}.png")
         page.screenshot(path=path, full_page=True)
 
 
