@@ -1,11 +1,9 @@
 name: UI Smoke Tests
 
 on:
-  push:
+  pull_request:
     branches:
       - main
-      - master
-  pull_request:
 
 permissions:
   contents: read
@@ -56,7 +54,7 @@ jobs:
         if: always()
         uses: dorny/test-reporter@v1
         with:
-          name: Smoke Test Results
+          name: Smoke Results
           path: reports/junit.xml
           reporter: java-junit
 
@@ -64,12 +62,12 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: pytest-html-report
+          name: smoke-html-report
           path: reports/
 
       - name: Upload failure artifacts
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: playwright-artifacts
+          name: smoke-playwright-artifacts
           path: artifacts/
