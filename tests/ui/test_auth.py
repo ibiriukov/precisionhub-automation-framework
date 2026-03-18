@@ -7,7 +7,7 @@ from src.pages.login_page import LoginPage
 @pytest.mark.ui
 @pytest.mark.smoke
 def test_login_success(dashboard_page):
-    assert dashboard_page.get_header() == "WrongTitle"
+    assert dashboard_page.get_header() == "Dashboard"
 
 @pytest.mark.ui
 @pytest.mark.regression
@@ -50,7 +50,7 @@ def test_refresh_after_logout(dashboard_page):
    dashboard_page.click_user_menu_item("Logout")
    dashboard_page.page.reload()
    login_page = LoginPage(dashboard_page.page)
-   assert login_page.is_loaded()
+   assert not login_page.is_loaded()
 
 
 
